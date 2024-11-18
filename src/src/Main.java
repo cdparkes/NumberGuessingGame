@@ -1,3 +1,4 @@
+import java.time.*;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -15,9 +16,8 @@ public class Main {
             inputInt = parseInput(inputString);
             if (inputInt == 0) {
                 repeat = true;
-            }
-            else if (inputInt < 1 || inputInt > 3) {
-                System.out.println(ConsoleColors.ANSI_RED +"Please enter only 1, 2 or 3\n" + ConsoleColors.ANSI_RESET);
+            } else if (inputInt < 1 || inputInt > 3) {
+                System.out.println(ConsoleColors.ANSI_RED + "Please enter only 1, 2 or 3\n" + ConsoleColors.ANSI_RESET);
                 repeat = true;
             } else {
                 guessingGame(inputInt);
@@ -44,9 +44,12 @@ public class Main {
         } while (repeat);
     }
 
-    public static void guessingGame (int input) {
-        int guesses = 0, inputGuess, guessCounter = 0;
+    public static void guessingGame(int input) {
+        Random random = new Random();
+        int guesses = 0, inputGuess, guessCounter = 0, randomNumber = random.nextInt(100);
         String difficulty = "";
+        boolean winCondition;
+
         switch (input) {
             case 1 -> {
                 guesses = 10;
@@ -64,28 +67,23 @@ public class Main {
 
         System.out.printf("Great! You have selected the %s difficulty level.%nLet's start the game%n%n", difficulty);
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(100);
-        boolean winCondition;
-
+        Instant start = Instant.now();
         while (guessCounter < guesses) {
             System.out.print("Enter you guess: ");
             String inputGuessString = scanner.nextLine();
-            try {
-                int inputInt = Integer.parseInt(inputGuessString);
-                if (inputInt < 0 || inputInt > 100) {
-                    System.err.println("Please enter numbers between 0 and 100");
-                } else {
-                    guessCounter++;
-                    winCondition = checkResult(inputInt, randomNumber);
-                    if (winCondition) {
-                        System.out.printf("Congratulations! You guessed the correct number in %d attempts.", guessCounter);
-                        break;
-                    }
+            int inputGuessInt = parseInput(inputGuessString);
+            if (inputGuessInt < 0 || inputGuessInt > 100) {
+                System.out.println(ConsoleColors.ANSI_RED + "Please enter numbers between 0 and 100" + ConsoleColors.ANSI_RESET);
+            } else {
+                guessCounter++;
+                winCondition = checkResult(inputGuessInt, randomNumber);
+                if (winCondition) {
+                    System.out.printf("Congratulations! You guessed the correct number in %d attempts.%n", guessCounter);
+                    Instant stop = Instant.now();
+                    Duration timeElapsed = Duration.between(start, stop);
+                    System.out.printf("You took %d seconds to guess the number!%n", timeElapsed.toSeconds());
+                    break;
                 }
-
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid input! Please try again!");
             }
         }
     }
@@ -104,13 +102,13 @@ public class Main {
 
     private static String printMenu() {
         System.out.println("""
-                    Welcome to the Number Guessing Game!
-                    I'm thinking of a number between 1 and 100
-                    Please choose your difficulty: 
-                    
-                    1. Easy (10 chances)
-                    2. Medium (5 chances)
-                    3. Hard (3 chances)\n""");
+                Welcome to the Number Guessing Game!
+                I'm thinking of a number between 1 and 100
+                Please choose your difficulty:
+                
+                1. Easy (10 chances)
+                2. Medium (5 chances)
+                3. Hard (3 chances)\n""");
         System.out.print("Enter your choice: ");
         String inputString = scanner.nextLine();
         System.out.println();
@@ -121,8 +119,7 @@ public class Main {
         int inputInt;
         try {
             return inputInt = Integer.parseInt(input);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             System.out.println(ConsoleColors.ANSI_RED + "You did not enter a valid input please try again!" + ConsoleColors.ANSI_RESET);
         }
         return 0;
