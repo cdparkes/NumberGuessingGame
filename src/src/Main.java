@@ -67,6 +67,7 @@ public class Main {
 
         System.out.printf("Great! You have selected the %s difficulty level.%nLet's start the game%n%n", difficulty);
 
+        // Setting start time for calculating timer
         Instant start = Instant.now();
         while (guessCounter < guesses) {
             System.out.print("Enter you guess: ");
@@ -79,7 +80,9 @@ public class Main {
                 winCondition = checkResult(inputGuessInt, randomNumber);
                 if (winCondition) {
                     System.out.printf("Congratulations! You guessed the correct number in %d attempts.%n", guessCounter);
+                    // Setting end time for calculating timer
                     Instant stop = Instant.now();
+                    // Calculating the difference between start and end time
                     Duration timeElapsed = Duration.between(start, stop);
                     System.out.printf("You took %d seconds to guess the number!%n", timeElapsed.toSeconds());
                     break;
